@@ -7,9 +7,10 @@
  * 
  * @category Awesomeness
  * @package  Twitter-API-PHP
- * @author   James Mallison <me@j7mbo.co.uk>
+ * @OriginalAuthor   James Mallison <me@j7mbo.co.uk>
+ * @ForkedBy : Alexandre Nguyen <alex.nr@hotmail.co.jp>
  * @license  MIT License
- * @link     http://github.com/j7mbo/twitter-api-php
+ * @link     https://github.com/alexzhxin/twitter-api-php
  */
 class TwitterAPIExchange
 {
@@ -191,7 +192,7 @@ class TwitterAPIExchange
 
         $options = array( 
             CURLOPT_HTTPHEADER => $header,
-            CURLOPT_HEADER => false,
+            CURLOPT_HEADER => true,
             CURLOPT_URL => $this->url,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_TIMEOUT => 10,
@@ -211,10 +212,15 @@ class TwitterAPIExchange
 
         $feed = curl_init();
         curl_setopt_array($feed, $options);
-        $json = curl_exec($feed);
+        $response = curl_exec($feed);
+
+        $header_size = curl_getinfo($feed, CURLINFO_HEADER_SIZE);
+        $header = substr($response, 0, $header_size);
+        $body = substr($response, $header_size);
+
         curl_close($feed);
 
-        if ($return) { return $json; }
+        if ($return) { return array("header" => $header, "body" => $body); }
     }
     
     /**
